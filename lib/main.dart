@@ -8,13 +8,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Random Words Generator",
+      theme: ThemeData(
+        primaryColor: Colors.white,
+      ),
       home: RandomWords(),
     );
   }
 }
 
 class RandomWordState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
+  final List<WordPair> _suggestions = <WordPair>[];
+  final Set<WordPair> _favorites = Set<WordPair>();
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
   Widget _buildSuggestions() {
@@ -33,11 +37,25 @@ class RandomWordState extends State<RandomWords> {
   }
 
   Widget _buildRow(WordPair pair) {
+    final bool checkSavedWord = _favorites.contains(pair);
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: _biggerFont,
       ),
+      trailing: Icon(
+        checkSavedWord ? Icons.favorite : Icons.favorite_border,
+        color: checkSavedWord ? Colors.red : null,
+      ),
+      onTap: () {
+        setState(() {
+          if (checkSavedWord) {
+            _favorites.remove(pair);
+          } else {
+            _favorites.add(pair);
+          }
+        });
+      },
     );
   }
 
@@ -46,8 +64,35 @@ class RandomWordState extends State<RandomWords> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Random Words Generator"),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.list), onPressed: _pushFavorites),
+        ],
       ),
       body: _buildSuggestions(),
+    );
+  }
+
+  void _pushFavorites() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (BuildContext context) {
+        final Iterable<ListTile> tiles = _favorites.map((WordPair pair) {
+          return ListTile(
+            title: Text(
+              pair.asPascalCase,
+              style: _biggerFont,
+            ),
+          );
+        });
+        final List<Widget> divided =
+            ListTile.divideTiles(context: context, tiles: tiles).toList();
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("List Favorites"),
+          ),
+          body: ListView(children: divided),
+        );
+      }),
     );
   }
 }
