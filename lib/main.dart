@@ -9,8 +9,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "Random Words Generator",
       theme: ThemeData(
-        primaryColor: Colors.white,
-      ),
+          primaryColor: Colors.amber,
+          textTheme: TextTheme(subhead: TextStyle(color: Colors.black26))),
       home: RandomWords(),
     );
   }
@@ -41,7 +41,12 @@ class RandomWordState extends State<RandomWords> {
     return ListTile(
       title: Text(
         pair.asPascalCase,
-        style: _biggerFont,
+        style: TextStyle(
+          fontSize: 18.0,
+          color: checkSavedWord
+              ? Colors.black
+              : Theme.of(context).textTheme.subhead.color,
+        ),
       ),
       trailing: Icon(
         checkSavedWord ? Icons.favorite : Icons.favorite_border,
