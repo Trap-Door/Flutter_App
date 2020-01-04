@@ -1,107 +1,106 @@
 import 'package:flutter/material.dart';
 
-void main(List<String> args) {
-  runApp(
-    MaterialApp(
-      title: "Shopdiiiiii",
-      home: ShoppingList(
-        productList: <Product>[
-          Product(name: "Ice scream"),
-          Product(name: "Toothpaste"),
-          Product(name: "Toothbrush"),
-          Product(name: "Vegetable")
+void main(List<String> args) => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Color color = Theme.of(context).primaryColor;
+
+    Widget titleSection = Container(
+      padding: const EdgeInsets.all(32),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    "Oeschinen Lake Campground",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Text(
+                  "Kandersteg, Switzerland",
+                  style: TextStyle(color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.red[500],
+          ),
+          Text("41")
         ],
       ),
+    );
+
+    Widget buttonSection = Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          _buildButtonColumn(color, Icons.call, "CALL"),
+          _buildButtonColumn(color, Icons.near_me, "ROUTE"),
+          _buildButtonColumn(color, Icons.share, "SHARE")
+        ],
+      ),
+    );
+
+    return MaterialApp(
+      title: "Flutter Layout",
+      home: Scaffold(
+        // appBar: AppBar(
+        //   title: Text("Flutter Layout"),
+        // ),
+        body: ListView(
+          children: <Widget>[
+            Image.asset(
+              "images/lake.jpg",
+              width: 600,
+              height: 240,
+              fit: BoxFit.cover,
+            ),
+            titleSection,
+            buttonSection,
+            textSection,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget textSection = Container(
+    padding: const EdgeInsets.all(32),
+    child: Text(
+      'Lake Oeschinen lies at the foot of the Blüemlisalp in the Bernese '
+      'Alps. Situated 1,578 meters above sea level, it is one of the '
+      'larger Alpine Lakes. A gondola ride from Kandersteg, followed by a '
+      'half-hour walk through pastures and pine forest, leads you to the '
+      'lake, which warms to 20 degrees Celsius in the summer. Activities '
+      'enjoyed here include rowing, and riding the summer toboggan run.',
+      softWrap: true,
     ),
   );
-}
 
-class Product {
-  const Product({this.name});
-  final String name;
-}
-
-typedef void CartChangedCallback(Product product, bool inCart);
-
-class ShoppingListItem extends StatelessWidget {
-  ShoppingListItem({Product product, this.inCart, this.onCartChanged})
-      : product = product,
-        super(key: ObjectKey(product));
-
-  final Product product;
-  final bool inCart;
-  final CartChangedCallback onCartChanged;
-
-  //Color and style for different parts of the tree
-  Color _getColor(BuildContext context) {
-    return inCart ? Colors.black54 : Theme.of(context).primaryColor;
-  }
-
-  TextStyle _getStyle(BuildContext context) {
-    if (!inCart) return null;
-
-    return TextStyle(
-      color: Colors.black54,
-      decoration: TextDecoration.lineThrough,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: () {
-        onCartChanged(product, inCart);
-      },
-      leading: CircleAvatar(
-        backgroundColor: _getColor(context),
-        child: Text(product.name[0]),
-      ),
-      title: Text(
-        product.name,
-        style: _getStyle(context),
-      ),
-    );
-  }
-}
-
-class ShoppingList extends StatefulWidget {
-  ShoppingList({Key key, this.productList}) : super(key: key);
-
-  final List<Product> productList;
-
-  @override
-  ShoppingListState createState() => ShoppingListState();
-}
-
-class ShoppingListState extends State<ShoppingList> {
-  Set<Product> _shoppingCart = Set<Product>();
-
-  void _handleCartChanged(Product product, bool inCart) {
-    setState(() {
-      if (!inCart) {
-        _shoppingCart.add(product);
-      } else {
-        _shoppingCart.remove(product);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Promotion Items"),
-      ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        children: widget.productList.map((Product product) {
-          return ShoppingListItem(
-            product: product,
-            inCart: _shoppingCart.contains(product),
-            onCartChanged: _handleCartChanged,
-          );
-        }).toList(),
-      ),
-    );
-  }
+  Column _buildButtonColumn(Color color, IconData icon, String label) => Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(icon, color: color),
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          )
+        ],
+      );
 }
